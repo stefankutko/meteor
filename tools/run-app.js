@@ -13,6 +13,7 @@ var buildmessage = require('./buildmessage.js');
 var runLog = require('./run-log.js');
 var catalog = require('./catalog.js');
 var stats = require('./stats.js');
+var cordova = require('./commands-cordova.js');
 var Console = require('./console.js').Console;
 
 // Parse out s as if it were a bash command line.
@@ -348,6 +349,11 @@ var AppRunner = function (appDir, options) {
   self.recordPackageUsage =
     options.recordPackageUsage === undefined ? true : options.recordPackageUsage;
 
+  // Keep track of the app's Cordova plugins. If the set of plugins
+  // changes from one run to the next, we just exit, because we don't
+  // yet have a way to get the new plugins to the mobile clients.
+  self.cordovaPlugins = null;
+
   self.fiber = null;
   self.startFuture = null;
   self.runFuture = null;
@@ -515,6 +521,19 @@ _.extend(AppRunner.prototype, {
         bundleResult: bundleResult
       };
     }
+
+    // XXX de-dup from commands-cordova.js
+    var plugins = cordova.getCordovaDependenciesFromStar(
+      bundleResult.starManifest);
+    _.extend(plugins, project.getCordovaPlugins());
+
+    if (self.cordovaPlugins && ! _.isEqual(self.cordovaPlugins, plugins)) {
+      return {
+        outcome: 'outdated-cordova-plugins',
+        bundleResult: bundleResult
+      };
+    }
+    self.cordovaPlugins = plugins;
 
     var serverWatchSet = bundleResult.serverWatchSet;
 
