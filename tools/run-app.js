@@ -522,10 +522,8 @@ _.extend(AppRunner.prototype, {
       };
     }
 
-    // XXX de-dup from commands-cordova.js
     var plugins = cordova.getCordovaDependenciesFromStar(
       bundleResult.starManifest);
-    _.extend(plugins, project.getCordovaPlugins());
 
     if (self.cordovaPlugins && ! _.isEqual(self.cordovaPlugins, plugins)) {
       return {

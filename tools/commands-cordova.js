@@ -102,6 +102,12 @@ cordova.getCordovaDependenciesFromStar = function (star) {
   }
 };
 
+cordova.getCordovaDependenciesFromStarAndProject = function (star) {
+  var plugins = cordova.getCordovaDependenciesFromStar(star);
+  _.extend(plugins, project.getCordovaPlugins());
+  return plugins;
+};
+
 // packages - list of strings
 cordova.filterPackages = function (packages) {
 // We hard-code the 'cordova' and 'platform' namespaces
@@ -609,8 +615,8 @@ var getInstalledPlugins = function (cordovaPath) {
   return installedPlugins;
 };
 
-// Ensures that the Cordova platforms are synchronized with the app-level
-// platforms.
+// Ensures that the Cordova plugins are synchronized with the app-level
+// plugins.
 
 var ensureCordovaPlugins = function (localPath, options) {
   options = options || {};
@@ -628,8 +634,6 @@ var ensureCordovaPlugins = function (localPath, options) {
     plugins = cordova.getCordovaDependenciesFromStar(bundle.starManifest);
     files.rm_recursive(bundlePath);
   }
-  // XXX the project-level cordova plugins deps override the package-level ones
-  _.extend(plugins, project.getCordovaPlugins());
 
   var cordovaPath = path.join(localPath, 'cordova-build');
 
