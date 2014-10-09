@@ -95,7 +95,11 @@ cordova.buildPlatformRunners = function (localPath, platforms, options) {
 // Returns the cordovaDependencies of the Cordova arch from a star json.
 cordova.getCordovaDependenciesFromStar = function (star) {
   var cordovaProgram = _.findWhere(star.programs, { arch: webArchName });
-  return cordovaProgram.cordovaDependencies;
+  if (cordovaProgram) {
+    return cordovaProgram.cordovaDependencies;
+  } else {
+    return {};
+  }
 };
 
 // packages - list of strings
