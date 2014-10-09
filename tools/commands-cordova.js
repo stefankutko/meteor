@@ -102,12 +102,6 @@ cordova.getCordovaDependenciesFromStar = function (star) {
   }
 };
 
-cordova.getCordovaDependenciesFromStarAndProject = function (star) {
-  var plugins = cordova.getCordovaDependenciesFromStar(star);
-  _.extend(plugins, project.getCordovaPlugins());
-  return plugins;
-};
-
 // packages - list of strings
 cordova.filterPackages = function (packages) {
 // We hard-code the 'cordova' and 'platform' namespaces
