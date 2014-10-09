@@ -253,3 +253,108 @@ selftest.define("remove cordova plugins", function () {
   run.expectExit(0);
   checkUserPlugins(s, []);
 });
+
+selftest.define("meteor exits when cordova plugins change", ["slow"], function () {
+  var s = new Sandbox();
+  var run;
+
+  s.createApp("myapp", "package-tests");
+  s.cd("myapp");
+
+  run = s.run("add-platform", "android");
+  run.match("Do you agree");
+  run.write("Y\n");
+  run.extraTime = 90; // Huge download
+  run.match("added platform");
+
+  run = s.run();
+  run.waitSecs(30);
+  run.match("Started your app");
+
+  // First add a plugin directly.
+  var pluginRun = s.run("add", "cordova:org.apache.cordova.camera@0.3.0");
+  pluginRun.waitSecs(30);
+  pluginRun.expectExit(0);
+  run.waitSecs(60);
+  run.matchErr("Your app's Cordova plugins have changed");
+  run.matchErr("Restart meteor");
+  run.expectExit(254);
+
+  run = s.run();
+  run.waitSecs(30);
+  run.match("Started your app");
+
+  // This shouldn't cause an exit because it contains the same plugin
+  // that we're already using.
+  pluginRun = s.run("add", "contains-camera-cordova-plugin");
+  pluginRun.waitSecs(30);
+  pluginRun.expectExit(0);
+  run.waitSecs(60);
+  run.match("restarted");
+
+  pluginRun = s.run("remove", "contains-camera-cordova-plugin");
+  pluginRun.waitSecs(30);
+  pluginRun.expectExit(0);
+  run.waitSecs(60);
+  run.match("restarted");
+
+  // This exits because it contains a new plugin, facebookconnect.
+  pluginRun = s.run("add", "contains-cordova-plugin");
+  pluginRun.waitSecs(30);
+  pluginRun.expectExit(0);
+  run.waitSecs(60);
+  run.matchErr("Your app's Cordova plugins have changed");
+  run.matchErr("Restart meteor");
+  run.expectExit(254);
+
+  run = s.run();
+  run.waitSecs(30);
+  run.match("Started your app");
+
+  pluginRun = s.run("remove", "contains-cordova-plugin");
+  pluginRun.waitSecs(30);
+  pluginRun.expectExit(0);
+  run.waitSecs(60);
+  run.matchErr("Your app's Cordova plugins have changed");
+  run.matchErr("Restart meteor");
+  run.expectExit(254);
+
+  run = s.run();
+  run.waitSecs(30);
+  run.match("Started your app");
+
+  pluginRun = s.run("remove", "cordova:org.apache.cordova.camera");
+  pluginRun.waitSecs(30);
+  pluginRun.expectExit(0);
+  run.waitSecs(60);
+  run.matchErr("Your app's Cordova plugins have changed");
+  run.matchErr("Restart meteor");
+  run.expectExit(254);
+
+  // Adding and removing just a Meteor package that contains plugins
+  // should also cause the tool to exit.
+  run = s.run();
+  run.waitSecs(30);
+  run.match("Started your app");
+
+  pluginRun = s.run("add", "contains-cordova-plugin");
+  pluginRun.waitSecs(30);
+  pluginRun.expectExit(0);
+  run.waitSecs(60);
+  run.matchErr("Your app's Cordova plugins have changed");
+  run.matchErr("Restart meteor");
+  run.expectExit(254);
+
+  run = s.run();
+  run.waitSecs(30);
+  run.match("Started your app");
+
+  pluginRun = s.run("remove", "contains-cordova-plugin");
+  pluginRun.waitSecs(30);
+  pluginRun.expectExit(0);
+  run.waitSecs(60);
+  run.matchErr("Your app's Cordova plugins have changed");
+  run.matchErr("Restart meteor");
+  run.expectExit(254);
+
+});
