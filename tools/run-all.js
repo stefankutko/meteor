@@ -325,6 +325,7 @@ exports.run = function (appDir, options) {
       if (once ||
           result.outcome === "conflicting-versions" ||
           result.outcome === "wrong-release" ||
+          result.outcome === "outdated-cordova-platforms" ||
           result.outcome === "outdated-cordova-plugins" ||
           (result.outcome === "terminated" &&
            result.signal === undefined && result.code === undefined)) {
@@ -361,6 +362,13 @@ exports.run = function (appDir, options) {
     process.stderr.write(
 "Your app's Cordova plugins have changed.\n" +
 "Restart meteor to use the new set of plugins.\n");
+    return 254;
+  }
+
+  if (result.outcome === "outdated-cordova-platforms") {
+    process.stderr.write(
+"Your app's platforms have changed.\n" +
+"Restart meteor to use the new set of platforms.\n");
     return 254;
   }
 

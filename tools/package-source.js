@@ -1530,6 +1530,7 @@ _.extend(PackageSource.prototype, {
       // XXX this read has a race with the actual reads that are used
       _.each([path.join(appDir, '.meteor', 'packages'),
               path.join(appDir, '.meteor', 'cordova-plugins'),
+              path.join(appDir, '.meteor', 'platforms'),
               path.join(appDir, '.meteor', 'release')], function (p) {
                 watch.readAndWatchFile(sourceArch.watchSet, p);
               });

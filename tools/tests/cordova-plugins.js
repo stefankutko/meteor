@@ -254,6 +254,72 @@ selftest.define("remove cordova plugins", function () {
   checkUserPlugins(s, []);
 });
 
+selftest.define("meteor exits when cordova platforms change", ["slow"], function () {
+  var s = new Sandbox();
+  var run;
+
+  s.createApp("myapp", "package-tests");
+  s.cd("myapp");
+
+  run = s.run();
+  run.waitSecs(30);
+  run.match("Started your app");
+
+  // Add a platform via command line
+  var platformRun = s.run("add-platform", "android");
+  platformRun.match("Do you agree");
+  platformRun.write("Y\n");
+  platformRun.extraTime = 90; // Huge download
+  platformRun.match("added platform");
+
+  run.waitSecs(60);
+  run.matchErr("Your app's platforms have changed");
+  run.matchErr("Restart meteor");
+  run.expectExit(254);
+
+  run = s.run();
+  run.waitSecs(30);
+  run.match("Started your app");
+
+  // Remove a platform via command line
+  platformRun = s.run("remove-platform", "android");
+  platformRun.waitSecs(15);
+  platformRun.match("removed platform");
+
+  run.waitSecs(60);
+  run.matchErr("Your app's platforms have changed");
+  run.matchErr("Restart meteor");
+  run.expectExit(254);
+
+  // Add a platform in .meteor/platforms
+  run = s.run();
+  run.waitSecs(30);
+  run.match("Started your app");
+
+  var platforms = s.read(path.join(".meteor", "platforms"));
+  platforms = platforms + "\nandroid";
+  s.write(path.join(".meteor", "platforms"), platforms);
+
+  run.waitSecs(60);
+  run.matchErr("Your app's platforms have changed");
+  run.matchErr("Restart meteor");
+  run.expectExit(254);
+
+  // Remove a platform in .meteor/platforms
+  run = s.run();
+  run.waitSecs(30);
+  run.match("Started your app");
+
+  platforms = s.read(path.join(".meteor", "platforms"));
+  platforms = platforms.replace(/android/g, "");
+  s.write(path.join(".meteor", "platforms"), platforms);
+
+  run.waitSecs(60);
+  run.matchErr("Your app's platforms have changed");
+  run.matchErr("Restart meteor");
+  run.expectExit(254);
+});
+
 selftest.define("meteor exits when cordova plugins change", ["slow"], function () {
   var s = new Sandbox();
   var run;

@@ -349,10 +349,13 @@ var AppRunner = function (appDir, options) {
   self.recordPackageUsage =
     options.recordPackageUsage === undefined ? true : options.recordPackageUsage;
 
-  // Keep track of the app's Cordova plugins. If the set of plugins
-  // changes from one run to the next, we just exit, because we don't
-  // yet have a way to get the new plugins to the mobile clients.
+  // Keep track of the app's Cordova plugins and platforms. If the set
+  // of plugins or platforms changes from one run to the next, we just
+  // exit, because we don't yet have a way to, for example, get the new
+  // plugins to the mobile clients or stop a running client on a
+  // platform that has been removed.
   self.cordovaPlugins = null;
+  self.cordovaPlatforms = null;
 
   self.fiber = null;
   self.startFuture = null;
@@ -532,6 +535,17 @@ _.extend(AppRunner.prototype, {
       };
     }
     self.cordovaPlugins = plugins;
+
+    var platforms = project.getCordovaPlatforms();
+    platforms.sort();
+    if (self.cordovaPlatforms &&
+        ! _.isEqual(self.cordovaPlatforms, platforms)) {
+      return {
+        outcome: 'outdated-cordova-platforms',
+        bundleResult: bundleResult
+      };
+    }
+    self.cordovaPlatforms = platforms;
 
     var serverWatchSet = bundleResult.serverWatchSet;
 
