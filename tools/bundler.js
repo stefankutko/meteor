@@ -797,14 +797,17 @@ _.extend(Target.prototype, {
   // version that has already been added.
   _addCordovaDependency: function (name, version, override) {
     var self = this;
-    if (! override) {
+    if (override) {
+      self.cordovaDependencies[name] = version;
+    } else {
       if (_.has(self.cordovaDependencies, name)) {
         var existingVersion = self.cordovaDependencies[name];
-        version = packageVersionParser.
+        self.cordovaDependencies[name] = packageVersionParser.
           lessThan(existingVersion, version) ? version : existingVersion;
+      } else {
+        self.cordovaDependencies[name] = version;
       }
     }
-    self.cordovaDependencies[name] = version;
   },
 
   // Add Cordova plugins that have been directly added to the project
