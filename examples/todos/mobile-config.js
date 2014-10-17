@@ -29,7 +29,7 @@ App.launchScreens({
   'ipad_portrait_2x': 'resources/splash/Default-Portrait@2x~ipad.png',
   'ipad_landscape': 'resources/splash/Default-Landscape~ipad.png',
   'ipad_landscape_2x': 'resources/splash/Default-Landscape@2x~ipad.png',
-  
+
   // Android
   'android_ldpi_portrait': 'resources/splash/splash.9.png',
   'android_ldpi_landscape': 'resources/splash/splash.9.png',
@@ -39,17 +39,8 @@ App.launchScreens({
   'android_hdpi_landscape': 'resources/splash/splash.9.png',
   'android_xhdpi_portrait': 'resources/splash/splash.9.png',
   'android_xhdpi_landscape': 'resources/splash/splash.9.png'  
-  // 'android_ldpi_portrait': 'resources/splash/ldpi.9.png',
-  // 'android_ldpi_landscape': 'resources/splash/ldpi.9.png',
-  // 'android_mdpi_portrait': 'resources/splash/mdpi.9.png',
-  // 'android_mdpi_landscape': 'resources/splash/mdpi.9.png',
-  // 'android_hdpi_portrait': 'resources/splash/hdpi.9.png',
-  // 'android_hdpi_landscape': 'resources/splash/hdpi.9.png',
-  // 'android_xhdpi_portrait': 'resources/splash/xhdpi.9.png',
-  // 'android_xhdpi_landscape': 'resources/splash/xhdpi.9.png'
 });
 
 App.setPreference('StatusBarOverlaysWebView', 'false');
 App.setPreference('StatusBarBackgroundColor', '#000000');
-App.setPreference('SplashScreen', 'screen');
 
